@@ -1,0 +1,17 @@
+# Web framework & server
+fastapi>=0.115.0
+uvicorn[standard]>=0.30.0
+python-multipart>=0.0.12
+
+# Document parsing and fallback conversion
+openpyxl>=3.1.5
+python-docx>=1.1.2
+reportlab>=4.2.5
+pillow>=10.4.0
+
+# PDF manipulation and lossless compression
+pypdf>=5.0.0
+pikepdf>=9.0.0
+
+# Optional PyMuPDF (can be installed if supported on host)
+# pymupdf>=1.24.0

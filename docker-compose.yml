@@ -1,0 +1,23 @@
+version: "3.8"
+
+services:
+  docuflow:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: docuflow-studio
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      - HOST=0.0.0.0
+      - PORT=8000
+      - FILE_RETENTION_MINUTES=60
+      - MAX_FILE_SIZE_MB=100
+      - LIBREOFFICE_PATH=/usr/bin/soffice
+    volumes:
+      # Persist storage if needed
+      - docuflow_storage:/app/storage
+
+volumes:
+  docuflow_storage:

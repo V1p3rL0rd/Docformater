@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DocuFlow — Конвертер офисных форматов и сжатие PDF без потери качества</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%233b82f6'><path d='M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm4 18H6V4h7v5h5v11z'/></svg>">
+</head>
+<body>
+
+  <!-- Header -->
+  <header>
+    <div class="container header-content">
+      <a href="/" class="logo">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--accent-primary)">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+          <polyline points="14 2 14 8 20 8"></polyline>
+          <line x1="16" y1="13" x2="8" y2="13"></line>
+          <line x1="16" y1="17" x2="8" y2="17"></line>
+          <polyline points="10 9 9 9 8 9"></polyline>
+        </svg>
+        <span>DocuFlow</span>
+        <span class="logo-badge">PRO</span>
+      </a>
+
+      <div class="header-right">
+        <div class="status-badge" id="system-status-badge">
+          <span class="status-indicator"></span> Подключение...
+        </div>
+        <a href="/docs" target="_blank" class="api-link">API Swagger ↗</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="container">
+    <div class="hero">
+      <h1>Конвертация и сжатие PDF документов</h1>
+      <p>Быстрая конвертация Word и Excel в PDF, а также профессиональное сжатие PDF без потери качества графики и текста.</p>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs-container">
+      <div class="tabs">
+        <button class="tab-btn active" data-tab="convert">
+          <span>📄</span> Конвертер в PDF
+        </button>
+        <button class="tab-btn" data-tab="compress">
+          <span>🗜️</span> Сжатие PDF
+        </button>
+        <button class="tab-btn" data-tab="combo">
+          <span>⚡</span> Конвертер + Сжатие
+        </button>
+      </div>
+    </div>
+
+    <!-- Processing Card -->
+    <div class="studio-card">
+      
+      <!-- Upload View -->
+      <div id="upload-view">
+        <div class="dropzone" id="dropzone">
+          <input type="file" id="file-input" style="display:none;" accept=".doc,.docx,.xls,.xlsx,.ppt,.pptx,.odt,.ods,.odp,.rtf,.txt,.csv">
+          <span class="dropzone-icon">📁</span>
+          <div class="dropzone-title" id="dropzone-title">Перетащите файл Word, Excel или презентацию</div>
+          <div class="dropzone-subtitle" id="dropzone-subtitle">Поддерживаются DOC, DOCX, XLS, XLSX, PPT, PPTX, CSV, TXT</div>
+          <div class="browse-btn">Выбрать файл на устройстве</div>
+        </div>
+
+        <!-- Selected File Banner -->
+        <div class="selected-file-card" id="selected-file-card" style="display: none;">
+          <div class="file-info">
+            <span class="file-icon">📄</span>
+            <div class="file-details">
+              <h4 id="file-name">document.docx</h4>
+              <p id="file-size">2.4 МБ</p>
+            </div>
+          </div>
+          <button class="remove-file-btn" id="remove-file-btn" title="Удалить файл">&times;</button>
+        </div>
+
+        <!-- Compression Options (Hidden for convert tab) -->
+        <div class="options-panel" id="compression-options" style="display: none;">
+          <div class="options-title">Режим сжатия PDF:</div>
+          <div class="compression-modes">
+            
+            <label class="mode-option">
+              <input type="radio" name="compression_mode" value="lossless" checked>
+              <div class="mode-card">
+                <span class="mode-badge badge-lossless">0% потери качества</span>
+                <div class="mode-name">Строго без потерь (Lossless)</div>
+                <div class="mode-desc">Пиксель в пиксель. Оптимизация объектных потоков Flate/zlib, сжатие таблиц и чистка мусора без изменения изображений.</div>
+              </div>
+            </label>
+
+            <label class="mode-option">
+              <input type="radio" name="compression_mode" value="smart_lossless">
+              <div class="mode-card">
+                <span class="mode-badge badge-smart">Рекомендуется</span>
+                <div class="mode-name">Умное (Визуально без потерь)</div>
+                <div class="mode-desc">Текст и вектор 100% четкие. Сканы и фото оптимизируются до 200 DPI без видимой глазу потери четкости.</div>
+              </div>
+            </label>
+
+            <label class="mode-option">
+              <input type="radio" name="compression_mode" value="high">
+              <div class="mode-card">
+                <span class="mode-badge badge-high">Максимум экономии</span>
+                <div class="mode-name">Максимальное сжатие</div>
+                <div class="mode-desc">Для почты и мессенджеров (150 DPI, качество 70%). Значительное уменьшение размера файла.</div>
+              </div>
+            </label>
+
+          </div>
+        </div>
+
+        <!-- Action Button -->
+        <button class="action-btn" id="action-btn" disabled>
+          <span id="action-btn-text">Конвертировать в PDF</span>
+        </button>
+      </div>
+
+      <!-- Processing Loading View -->
+      <div class="processing-view" id="processing-view">
+        <div class="spinner"></div>
+        <div class="processing-title">Обработка документа...</div>
+        <div class="processing-subtitle" id="processing-text">Пожалуйста, подождите несколько секунд</div>
+      </div>
+
+      <!-- Result View -->
+      <div class="result-view" id="result-view">
+        <div class="result-success-badge">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+          Файл успешно обработан!
+        </div>
+
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-label">Исходный размер</div>
+            <div class="stat-value" id="stat-orig-size">0 Б</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Итоговый размер</div>
+            <div class="stat-value" id="stat-final-size">0 Б</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Экономия места</div>
+            <div class="stat-value stat-saved" id="stat-saved">-0%</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Время обработки</div>
+            <div class="stat-value" id="stat-duration">0 с</div>
+          </div>
+        </div>
+
+        <div class="engine-info" id="engine-details">
+          Алгоритм: Lossless Deflate Stream Packing
+        </div>
+
+        <div class="result-actions">
+          <a href="#" class="download-btn" id="download-link">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+            Скачать готовый PDF
+          </a>
+          <button class="reset-btn" id="reset-btn">Обработать еще файл</button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Informational Grid -->
+    <div class="info-section">
+      <div class="info-card">
+        <h3><span>⚡</span> Мгновенная конвертация</h3>
+        <p>Конвертируйте документы Microsoft Word (.doc, .docx) и Excel (.xls, .xlsx, .csv) в стандартный PDF. Сохраняются таблицы, стили текста, шрифты и разбивка по страницам.</p>
+      </div>
+
+      <div class="info-card">
+        <h3><span>🔒</span> Сжатие строго без потерь</h3>
+        <p>Технология Object Stream объединяет сотни неструктурированных PDF-объектов в компактные потоки Flate/zlib (уровень 9). Удаляются неиспользуемые метаданные и дубликаты ресурсов без изменения единого пикселя.</p>
+      </div>
+
+      <div class="info-card">
+        <h3><span>🛡️</span> Безопасность данных</h3>
+        <p>Ваши файлы обрабатываются изолированно и автоматически удаляются с сервера через 60 минут. Никакой передачи третьим лицам или внешним облачным сервисам.</p>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      DocuFlow Studio &copy; 2026. Сервис конвертации и оптимизации документов.
+    </div>
+  </footer>
+
+  <div class="toast" id="toast"></div>
+
+  <script src="/static/js/app.js"></script>
+</body>
+</html>

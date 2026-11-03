@@ -12,40 +12,72 @@ from app.converters.base import ConversionError, ConversionResult
 
 def find_libreoffice_binary() -> Optional[str]:
     """
-    Search for LibreOffice / soffice binary across common OS installation locations.
+    Search for LibreOffice / soffice binary across common OS installation locations (macOS, Windows, Linux).
     Returns path to executable or None if not found.
     """
     if LIBREOFFICE_PATH and os.path.exists(LIBREOFFICE_PATH):
         return LIBREOFFICE_PATH
 
     # Check PATH
-    for name in ("soffice", "libreoffice", "soffice.bin", "libreoffice.bin"):
+    for name in ("soffice", "libreoffice", "soffice.bin", "libreoffice.bin", "soffice.exe", "libreoffice.exe"):
         path = shutil.which(name)
         if path:
             return path
 
-    # Check common platform-specific paths
+    # Windows registry & environment variables
+    if os.name == "nt":
+        for env_var in ("PROGRAMFILES", "PROGRAMFILES(X86)", "LOCALAPPDATA"):
+            base = os.getenv(env_var)
+            if base:
+                cand = Path(base) / "LibreOffice" / "program" / "soffice.exe"
+                if cand.exists():
+                    return str(cand)
+        try:
+            import winreg
+            for root_key in (winreg.HKEY_LOCAL_MACHINE, winreg.HKEY_CURRENT_USER):
+                for key_path in (
+                    r"SOFTWARE\LibreOffice\UNO\InstallPath",
+                    r"SOFTWARE\WOW6432Node\LibreOffice\UNO\InstallPath",
+                ):
+                    try:
+                        with winreg.OpenKey(root_key, key_path) as key:
+                            val, _ = winreg.QueryValueEx(key, "")
+                            if val:
+                                cand = Path(val) / "soffice.exe"
+                                if cand.exists():
+                                    return str(cand)
+                    except OSError:
+                        pass
+        except ImportError:
+            pass
+
+    # Common platform-specific fallback paths
     common_paths = [
         # macOS
         "/Applications/LibreOffice.app/Contents/MacOS/soffice",
         "~/Applications/LibreOffice.app/Contents/MacOS/soffice",
         "/opt/homebrew/bin/soffice",
         "/usr/local/bin/soffice",
-        # Linux
+        # Linux (Debian, Ubuntu, Arch, Fedora, openSUSE, Snap, Flatpak)
         "/usr/bin/libreoffice",
         "/usr/bin/soffice",
         "/usr/lib/libreoffice/program/soffice",
         "/opt/libreoffice/program/soffice",
         "/snap/bin/libreoffice",
-        # Windows
+        "/var/lib/flatpak/exports/bin/org.libreoffice.LibreOffice",
+        "~/.local/share/flatpak/exports/bin/org.libreoffice.LibreOffice",
+        # Windows static defaults
         r"C:\Program Files\LibreOffice\program\soffice.exe",
         r"C:\Program Files (x86)\LibreOffice\program\soffice.exe",
     ]
 
     for p in common_paths:
-        expanded = Path(p).expanduser().resolve()
-        if expanded.exists() and os.access(expanded, os.X_OK):
-            return str(expanded)
+        try:
+            expanded = Path(p).expanduser().resolve()
+            if expanded.exists() and (os.access(expanded, os.X_OK) or os.name == "nt"):
+                return str(expanded)
+        except Exception:
+            continue
 
     return None
 
@@ -80,7 +112,7 @@ class LibreOfficeConverter:
             temp_out_dir = Path(temp_dir) / "output"
             temp_out_dir.mkdir(parents=True, exist_ok=True)
 
-            profile_arg = f"-env:UserInstallation=file://{temp_profile_dir.as_posix()}"
+            profile_arg = f"-env:UserInstallation={temp_profile_dir.as_uri()}"
 
             cmd = [
                 self.binary_path,

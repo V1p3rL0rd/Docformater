@@ -70,25 +70,69 @@ docker compose up --build
 
 ---
 
-### Вариант 2: Локальный запуск (macOS / Linux / Windows)
+### Вариант 2: Локальный запуск по операционным системам
 
-#### 1. Создание виртуального окружения и установка зависимостей:
+#### 🪟 1. Windows (10 / 11 / Server)
+
+**Быстрый запуск в 1 клик:**
+1. Убедитесь, что установлен Python 3.10–3.12 (можно установить командой в PowerShell: `winget install Python.Python.3.12`). При установке обязательно включите галочку *"Add python.exe to PATH"*.
+2. Дважды кликните по файлу **`start_windows.bat`**.
+   * Скрипт сам создаст изолированное окружение `.venv`, установит все зависимости и откроет веб-интерфейс в браузере!
+3. *(Рекомендуется для максимальной точности верстки .doc и .xls)*: Установите [LibreOffice для Windows](https://www.libreoffice.org/download/download/) (команда: `winget install TheDocumentFoundation.LibreOffice`). Приложение найдет его автоматически.
+
+---
+
+#### 🐧 2. Linux (Ubuntu / Debian / Astra Linux / Mint)
+
+**Установка и запуск в 1 команду:**
 ```bash
-python3 -m venv venv
-source venv/bin/activate
+# 1. Автоматическая установка системных пакетов и зависимостей (один раз)
+./setup_ubuntu.sh
+
+# 2. Запуск приложения
+./start_unix.sh
+```
+
+**Ручная установка (по шагам):**
+```bash
+# Установка системных зависимостей
+sudo apt update && sudo apt install -y python3 python3-venv python3-pip libreoffice libreoffice-writer libreoffice-calc ghostscript qpdf fonts-dejavu fonts-liberation
+
+# Создание и активация окружения
+python3 -m venv .venv
+source .venv/bin/activate
 pip install -r requirements.txt
+
+# Запуск
+python run.py
 ```
 
-#### 2. Запуск приложения:
+*(Опционально)*: Для запуска в качестве фонового системного демона на сервере в проект включен готовый systemd-юнит [`docformater.service`](file:///Users/vianor/GITHUB/docformater/docformater.service).
+
+---
+
+#### 🍏 3. macOS (Apple Silicon M1-M4 / Intel)
+
+1. Установите зависимости через Homebrew (если требуется LibreOffice):
+   ```bash
+   brew install python
+   brew install --cask libreoffice  # Опционально для нативного рендеринга
+   ```
+2. Запустите в 1 клик:
+   ```bash
+   ./start_unix.sh
+   # или
+   ./run.sh
+   ```
+
+---
+
+#### 🌐 4. Универсальный запуск из любой терминальной консоли
+Если виртуальное окружение уже активировано:
 ```bash
-./run.sh
-# или напрямую:
-uvicorn app.main:app --host 0.0.0.0 --port 8080 --reload
+python run.py
 ```
-
-Приложение доступно по адресу: **`http://localhost:8080`**
-
-> **Примечание:** Для 100% точной верстки сложных файлов `.doc` и `.xls` на локальном компьютере рекомендуется иметь установленный LibreOffice (`brew install --cask libreoffice` на macOS или `sudo apt install libreoffice` на Ubuntu). Если LibreOffice не установлен, DocFormater автоматически переключится на встроенный Python-движок (`python-docx` + `openpyxl` + `reportlab`).
+Приложение доступно по адресу: **`http://localhost:8080`** (Swagger: `http://localhost:8080/docs`)
 
 ---
 

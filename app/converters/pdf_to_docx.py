@@ -67,7 +67,7 @@ class PdfToDocxConverter:
 
                     cmd = [
                         self.lo_binary,
-                        f"-env:UserInstallation=file://{profile_dir.as_posix()}",
+                        f"-env:UserInstallation={profile_dir.as_uri()}",
                         "--headless",
                         "--invisible",
                         "--infilter=writer_pdf_import",

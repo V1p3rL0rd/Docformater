@@ -1,0 +1,17 @@
+[Unit]
+Description=DocFormater Web Service
+After=network.target
+
+[Service]
+Type=simple
+User=www-data
+WorkingDirectory=/opt/docformater
+ExecStart=/opt/docformater/.venv/bin/python /opt/docformater/run.py
+Restart=always
+RestartSec=3
+Environment="HOST=0.0.0.0"
+Environment="PORT=8080"
+Environment="FILE_RETENTION_MINUTES=60"
+
+[Install]
+WantedBy=multi-user.target

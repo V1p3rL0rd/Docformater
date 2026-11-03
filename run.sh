@@ -18,8 +18,8 @@ fi
 
 echo "=========================================================="
 echo " Starting DocFormater Web Application"
-echo " Access URL: http://localhost:8000"
-echo " Swagger API: http://localhost:8000/docs"
+echo " Access URL: http://localhost:5000"
+echo " Swagger API: http://localhost:5000/docs"
 echo "=========================================================="
 
-exec $UVICORN app.main:app --host 0.0.0.0 --port 8000 --reload
+exec $UVICORN app.main:app --host 0.0.0.0 --port 5000 --reload

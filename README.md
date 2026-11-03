@@ -58,7 +58,7 @@ cd /Users/vianor/GITHUB/docformater
 docker compose up --build
 ```
 
-После старта откройте в браузере: **`http://localhost:8000`**
+После старта откройте в браузере: **`http://localhost:5000`**
 
 ---
 
@@ -75,10 +75,10 @@ pip install -r requirements.txt
 ```bash
 ./run.sh
 # или напрямую:
-uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+uvicorn app.main:app --host 0.0.0.0 --port 5000 --reload
 ```
 
-Приложение доступно по адресу: **`http://localhost:8000`**
+Приложение доступно по адресу: **`http://localhost:5000`**
 
 > **Примечание:** Для 100% точной верстки сложных файлов `.doc` и `.xls` на локальном компьютере рекомендуется иметь установленный LibreOffice (`brew install --cask libreoffice` на macOS или `sudo apt install libreoffice` на Ubuntu). Если LibreOffice не установлен, DocFormater автоматически переключится на встроенный Python-движок (`python-docx` + `openpyxl` + `reportlab`).
 
@@ -86,7 +86,7 @@ uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 
 ## 📡 REST API Документация
 
-DocFormater предоставляет простой и удобный REST API. Полная интерактивная спецификация Swagger доступна по адресу `http://localhost:8000/docs`.
+DocFormater предоставляет простой и удобный REST API. Полная интерактивная спецификация Swagger доступна по адресу `http://localhost:5000/docs`.
 
 ### 1. Статус системы
 ```http
@@ -104,7 +104,7 @@ Content-Type: multipart/form-data
 
 **Пример запроса через curl:**
 ```bash
-curl -X POST "http://localhost:8000/api/convert" \
+curl -X POST "http://localhost:5000/api/convert" \
      -F "file=@sample_contract.docx"
 ```
 
@@ -134,7 +134,7 @@ Content-Type: multipart/form-data
 
 **Пример запроса через curl:**
 ```bash
-curl -X POST "http://localhost:8000/api/compress" \
+curl -X POST "http://localhost:5000/api/compress" \
      -F "file=@presentation.pdf" \
      -F "mode=lossless"
 ```

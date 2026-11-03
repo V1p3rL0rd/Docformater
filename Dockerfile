@@ -42,10 +42,10 @@ COPY . /app
 RUN mkdir -p /app/storage/uploads /app/storage/outputs && \
     chmod -R 777 /app/storage
 
-EXPOSE 8000
+EXPOSE 5000
 
 # Healthcheck
 HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 \
-  CMD curl -f http://localhost:8000/api/status || exit 1
+  CMD curl -f http://localhost:5000/api/status || exit 1
 
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "5000"]

@@ -24,7 +24,7 @@ LIBREOFFICE_PATH = os.getenv("LIBREOFFICE_PATH", "")
 
 # Server configuration
 HOST = os.getenv("HOST", "0.0.0.0")
-PORT = int(os.getenv("PORT", "5000"))
+PORT = int(os.getenv("PORT", "8080"))
 DEBUG = os.getenv("DEBUG", "false").lower() in ("true", "1", "yes")
 
 # Allowed extensions

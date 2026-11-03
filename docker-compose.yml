@@ -8,10 +8,10 @@ services:
     container_name: docformater-studio
     restart: unless-stopped
     ports:
-      - "5000:5000"
+      - "8080:8080"
     environment:
       - HOST=0.0.0.0
-      - PORT=5000
+      - PORT=8080
       - FILE_RETENTION_MINUTES=60
       - MAX_FILE_SIZE_MB=100
       - LIBREOFFICE_PATH=/usr/bin/soffice

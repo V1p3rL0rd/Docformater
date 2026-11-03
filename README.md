@@ -67,7 +67,7 @@ Docker-образ содержит Ubuntu/Debian, Python 3.12, LibreOffice headl
 
 ```bash
 # Клонируйте репозиторий и перейдите в папку
-cd /Users/docformater
+cd ~/docformater
 
 # Сборка и запуск контейнера
 docker compose up --build

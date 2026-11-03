@@ -1,6 +1,13 @@
 # 📄 DocFormater — Веб-студия конвертации документов и сжатия PDF без потери качества
 
-**DocFormater** — это полнофункциональное современное веб-приложение для конвертации офисных форматов документов (Word, Excel, PowerPoint) в формат PDF, а также профессионального **сжатия PDF файлов без потери качества** (True Lossless).
+<p align="center">
+  <img src="https://img.shields.io/badge/Python-3.10%2B-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Python 3.10+">
+  <img src="https://img.shields.io/badge/FastAPI-0.115%2B-009688?style=for-the-badge&logo=fastapi&logoColor=white" alt="FastAPI">
+  <img src="https://img.shields.io/badge/Docker-Ready-2496ED?style=for-the-badge&logo=docker&logoColor=white" alt="Docker Ready">
+  <img src="https://img.shields.io/badge/Platform-Windows%20|%20macOS%20|%20Linux-475569?style=for-the-badge" alt="Cross-Platform">
+</p>
+
+> **DocFormater** — современное приватное веб-приложение для конвертации офисных документов (Word, Excel, PowerPoint) в PDF, обратного преобразования из PDF в Word/Excel, а также профессионального **сжатия PDF без потери качества** (True Lossless). Работает локально и автономно.
 
 ---
 

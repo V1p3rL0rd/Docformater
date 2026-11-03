@@ -67,7 +67,7 @@ Docker-образ содержит Ubuntu/Debian, Python 3.12, LibreOffice headl
 
 ```bash
 # Клонируйте репозиторий и перейдите в папку
-cd /Users/vianor/GITHUB/docformater
+cd /Users/docformater
 
 # Сборка и запуск контейнера
 docker compose up --build
@@ -114,7 +114,7 @@ pip install -r requirements.txt
 python run.py
 ```
 
-*(Опционально)*: Для запуска в качестве фонового системного демона на сервере в проект включен готовый systemd-юнит [`docformater.service`](file:///Users/vianor/GITHUB/docformater/docformater.service).
+*(Опционально)*: Для запуска в качестве фонового системного демона на сервере в проект включен готовый systemd-юнит [`docformater.service`](file://docformater/docformater.service).
 
 ---
 

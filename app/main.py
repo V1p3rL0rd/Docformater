@@ -355,7 +355,6 @@ async def download_file(stored_filename: str, filename: str = None):
         path=str(target),
         filename=download_name,
         media_type=media_type,
-        headers={"Content-Disposition": f'attachment; filename="{download_name}"'},
     )
 
 

@@ -74,6 +74,25 @@ class TestApiEndpoints(unittest.TestCase):
         self.assertTrue(data["success"])
         self.assertIn("final_size", data)
 
+    def test_download_cyrillic_filename(self):
+        from urllib.parse import unquote
+        # Specifically test downloading a file with Russian Cyrillic characters and spaces
+        file_path = SAMPLE_DIR / "sample_contract.docx"
+        with open(file_path, "rb") as f:
+            response = self.client.post(
+                "/api/convert",
+                files={"file": ("ОФОРМЛЕНИЕ ЗАЯВКИ В SERVICEDESK.docx", f, "application/vnd.openxmlformats-officedocument.wordprocessingml.document")}
+            )
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        self.assertTrue(data["success"])
+
+        # Test downloading using the returned URL containing the Cyrillic filename
+        dl_resp = self.client.get(data["download_url"])
+        self.assertEqual(dl_resp.status_code, 200)
+        decoded_header = unquote(dl_resp.headers.get("content-disposition", ""))
+        self.assertIn("ОФОРМЛЕНИЕ ЗАЯВКИ В SERVICEDESK.pdf", decoded_header)
+
 
 if __name__ == "__main__":
     unittest.main()

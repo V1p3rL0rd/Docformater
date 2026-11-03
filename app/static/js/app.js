@@ -9,6 +9,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const fileSizeDisplay = document.getElementById("file-size");
   const removeFileBtn = document.getElementById("remove-file-btn");
   const compressionOptions = document.getElementById("compression-options");
+  const reverseOptions = document.getElementById("reverse-options");
   const actionBtn = document.getElementById("action-btn");
   const actionBtnText = document.getElementById("action-btn-text");
 
@@ -39,6 +40,15 @@ document.addEventListener("DOMContentLoaded", () => {
       subtitle: "Поддерживаются: DOC, DOCX, XLS, XLSX, PPT, PPTX, CSV, TXT",
       btnText: "Конвертировать в PDF",
       showCompressionOptions: false,
+      showReverseOptions: false,
+    },
+    reverse: {
+      accept: ".pdf",
+      title: "Перетащите PDF файл для конвертации в Word или Excel",
+      subtitle: "Поддерживаются файлы .PDF с текстом, таблицами и графикой",
+      btnText: "Конвертировать из PDF",
+      showCompressionOptions: false,
+      showReverseOptions: true,
     },
     compress: {
       accept: ".pdf",
@@ -46,6 +56,7 @@ document.addEventListener("DOMContentLoaded", () => {
       subtitle: "Поддерживаются файлы .PDF любого размера",
       btnText: "Сжать PDF",
       showCompressionOptions: true,
+      showReverseOptions: false,
     },
     combo: {
       accept: ".doc,.docx,.xls,.xlsx,.ppt,.pptx,.odt,.ods,.odp,.rtf,.txt,.csv",
@@ -53,6 +64,7 @@ document.addEventListener("DOMContentLoaded", () => {
       subtitle: "Сконвертирует в PDF и сразу сожмет без потери качества",
       btnText: "Конвертировать и сжать",
       showCompressionOptions: true,
+      showReverseOptions: false,
     },
   };
 
@@ -77,6 +89,7 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("dropzone-subtitle").textContent = config.subtitle;
     actionBtnText.textContent = config.btnText;
     compressionOptions.style.display = config.showCompressionOptions ? "block" : "none";
+    reverseOptions.style.display = config.showReverseOptions ? "block" : "none";
   }
 
   // File drag & drop
@@ -139,7 +152,12 @@ document.addEventListener("DOMContentLoaded", () => {
     formData.append("file", selectedFile);
 
     let endpoint = "/api/convert";
-    if (currentTab === "compress") {
+    if (currentTab === "reverse") {
+      endpoint = "/api/convert-from-pdf";
+      const targetFormat = document.querySelector('input[name="reverse_format"]:checked')?.value || "docx";
+      formData.append("target_format", targetFormat);
+      processingText.textContent = `Конвертация PDF в ${targetFormat.toUpperCase()}...`;
+    } else if (currentTab === "compress") {
       endpoint = "/api/compress";
       const selectedMode = document.querySelector('input[name="compression_mode"]:checked')?.value || "lossless";
       formData.append("mode", selectedMode);
@@ -182,6 +200,13 @@ document.addEventListener("DOMContentLoaded", () => {
       statSaved.className = "stat-value";
       statDuration.textContent = `${data.duration_seconds} с`;
       engineDetails.innerHTML = `<strong>Движок конвертации:</strong> ${data.engine_used} ${data.warning ? `<br><span style="color:var(--warning)">⚠️ ${data.warning}</span>` : ""}`;
+    } else if (currentTab === "reverse") {
+      statOrigSize.textContent = formatBytes(data.original_size);
+      statFinalSize.textContent = formatBytes(data.converted_size);
+      statSaved.textContent = data.target_format.toUpperCase();
+      statSaved.className = "stat-value stat-saved";
+      statDuration.textContent = `${data.duration_seconds} с`;
+      engineDetails.innerHTML = `<strong>Движок обратной конвертации:</strong> ${data.engine_used}<br><strong>Целевой формат:</strong> .${data.target_format.toUpperCase()}`;
     } else if (currentTab === "compress") {
       statOrigSize.textContent = formatBytes(data.original_size);
       statFinalSize.textContent = formatBytes(data.compressed_size);

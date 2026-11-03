@@ -13,5 +13,6 @@ pillow>=10.4.0
 pypdf>=5.0.0
 pikepdf>=9.0.0
 
-# Optional PyMuPDF (can be installed if supported on host)
-# pymupdf>=1.24.0
+# Reverse conversion (PDF to DOCX and XLSX)
+pdfplumber>=0.11.0
+pdf2docx>=0.5.10

@@ -20,6 +20,7 @@ from app.config import (
 )
 from app.converters.base import ConversionError
 from app.converters.manager import ConversionManager
+from app.converters.reverse_manager import ReverseConversionManager
 from app.compressors.base import CompressionError
 from app.compressors.manager import CompressionManager
 from app.services.cleaner import cleanup_expired_files
@@ -67,6 +68,7 @@ app.add_middleware(
 # Services
 storage_service = StorageService()
 conversion_manager = ConversionManager()
+reverse_manager = ReverseConversionManager()
 compression_manager = CompressionManager()
 
 
@@ -78,6 +80,7 @@ async def get_system_status():
     return {
         "status": "online",
         "converter": conversion_manager.get_status(),
+        "reverse_converter": reverse_manager.get_status(),
         "compressor": compression_manager.get_status(),
         "retention_minutes": FILE_RETENTION_MINUTES,
     }
@@ -268,6 +271,68 @@ async def convert_and_compress(
     }
 
 
+@app.post("/api/convert-from-pdf")
+async def convert_from_pdf(
+    file: UploadFile = File(...),
+    target_format: str = Form("docx"),
+):
+    """
+    Reverse conversion: Converts a PDF document to Word (.docx) or Excel (.xlsx).
+    """
+    if not file.filename:
+        raise HTTPException(status_code=400, detail="Filename is empty.")
+
+    suffix = Path(file.filename).suffix.lower()
+    if suffix != ".pdf":
+        raise HTTPException(
+            status_code=400,
+            detail="Для обратной конвертации принимаются только файлы формата PDF (.pdf)."
+        )
+
+    target_format = target_format.lower().lstrip(".")
+    if target_format not in ("docx", "xlsx"):
+        raise HTTPException(status_code=400, detail="Целевой формат должен быть 'docx' или 'xlsx'.")
+
+    try:
+        file_id, upload_path, original_filename = await storage_service.save_upload(file)
+    except ValueError as ve:
+        raise HTTPException(status_code=413, detail=str(ve))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Ошибка сохранения файла: {e}")
+
+    output_suffix = f".{target_format}"
+    output_path = storage_service.get_output_path(file_id, suffix=output_suffix)
+
+    try:
+        result = reverse_manager.convert_from_pdf(upload_path, output_path, target_format=target_format)
+    except ConversionError as ce:
+        raise HTTPException(status_code=422, detail=str(ce))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Ошибка обратной конвертации: {e}")
+    finally:
+        if upload_path.exists():
+            try:
+                upload_path.unlink()
+            except Exception:
+                pass
+
+    pdf_stem = Path(original_filename).stem
+    download_filename = f"{pdf_stem}.{target_format}"
+
+    return {
+        "success": True,
+        "file_id": file_id,
+        "original_filename": original_filename,
+        "download_filename": download_filename,
+        "original_size": result.original_size,
+        "converted_size": result.converted_size,
+        "engine_used": result.engine_used,
+        "target_format": target_format,
+        "duration_seconds": result.duration_seconds,
+        "download_url": f"/api/download/{output_path.name}?filename={quote(download_filename)}",
+    }
+
+
 @app.get("/api/download/{stored_filename}")
 async def download_file(stored_filename: str, filename: str = None):
     """
@@ -278,10 +343,18 @@ async def download_file(stored_filename: str, filename: str = None):
         raise HTTPException(status_code=404, detail="Файл не найден или срок его хранения истёк.")
 
     download_name = filename or target.name
+    mime_types = {
+        ".pdf": "application/pdf",
+        ".docx": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        ".xlsx": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        ".txt": "text/plain",
+    }
+    media_type = mime_types.get(target.suffix.lower(), "application/octet-stream")
+
     return FileResponse(
         path=str(target),
         filename=download_name,
-        media_type="application/pdf",
+        media_type=media_type,
         headers={"Content-Disposition": f'attachment; filename="{download_name}"'},
     )
 

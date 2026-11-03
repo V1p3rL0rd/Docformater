@@ -37,20 +37,23 @@
   <main class="container">
     <div class="hero">
       <h1>Конвертация и сжатие PDF документов</h1>
-      <p>Быстрая конвертация Word и Excel в PDF, а также профессиональное сжатие PDF без потери качества графики и текста.</p>
+      <p>Быстрая конвертация Word и Excel в PDF, обратное преобразование PDF в Word/Excel, а также профессиональное сжатие PDF без потери качества.</p>
     </div>
 
     <!-- Tabs -->
     <div class="tabs-container">
       <div class="tabs">
         <button class="tab-btn active" data-tab="convert">
-          <span>📄</span> Конвертер в PDF
+          <span>📄</span> В PDF
+        </button>
+        <button class="tab-btn" data-tab="reverse">
+          <span>🔄</span> Из PDF в Word/Excel
         </button>
         <button class="tab-btn" data-tab="compress">
           <span>🗜️</span> Сжатие PDF
         </button>
         <button class="tab-btn" data-tab="combo">
-          <span>⚡</span> Конвертер + Сжатие
+          <span>⚡</span> В PDF + Сжатие
         </button>
       </div>
     </div>
@@ -109,6 +112,32 @@
                 <span class="mode-badge badge-high">Максимум экономии</span>
                 <div class="mode-name">Максимальное сжатие</div>
                 <div class="mode-desc">Для почты и мессенджеров (150 DPI, качество 70%). Значительное уменьшение размера файла.</div>
+              </div>
+            </label>
+
+          </div>
+        </div>
+
+        <!-- Reverse Options (Visible only for reverse tab) -->
+        <div class="options-panel" id="reverse-options" style="display: none;">
+          <div class="options-title">Выберите целевой формат:</div>
+          <div class="compression-modes">
+            
+            <label class="mode-option">
+              <input type="radio" name="reverse_format" value="docx" checked>
+              <div class="mode-card">
+                <span class="mode-badge badge-smart">Документ Word</span>
+                <div class="mode-name">Microsoft Word (.DOCX)</div>
+                <div class="mode-desc">Восстанавливает форматирование текста, абзацы, заголовки, списки и таблицы для редактирования.</div>
+              </div>
+            </label>
+
+            <label class="mode-option">
+              <input type="radio" name="reverse_format" value="xlsx">
+              <div class="mode-card">
+                <span class="mode-badge badge-lossless">Таблица Excel</span>
+                <div class="mode-name">Microsoft Excel (.XLSX)</div>
+                <div class="mode-desc">Автоматически извлекает таблицы и числовые данные в оформленные листы Excel со стилями.</div>
               </div>
             </label>
 

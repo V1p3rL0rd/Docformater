@@ -14,7 +14,15 @@
   * **LibreOffice Headless Engine** (рекомендуемый для Docker / серверов): 100% сохранение оригинальной верстки, таблиц, встроенных диаграмм, колонтитулов и макро-разметки. Поддерживает параллельные конвертации за счет изолированных профилей пользователей (`-env:UserInstallation`).
   * **Встроенный Native Python Engine** (`python-docx`, `openpyxl`, `reportlab`): позволяет конвертировать `.docx`, `.xlsx`, `.csv` и `.txt` даже в легковесных средах без установленного LibreOffice.
 
-### 2. 🗜️ Сжатие PDF без потери качества (True Lossless)
+### 2. ↩️ Обратная конвертация (PDF в Word и Excel)
+* **PDF в Microsoft Word (.docx):**
+  * Анализирует верстку, заголовки, списки, абзацы и встроенные таблицы с помощью `pdf2docx` (PyMuPDF) или LibreOffice Writer.
+  * Генерирует полностью редактируемый документ `.docx`, готовый для внесения правок в Microsoft Word.
+* **PDF в Microsoft Excel (.xlsx):**
+  * Интеллектуальное извлечение структурированных таблиц и числовых данных с помощью `pdfplumber` и `openpyxl`.
+  * Автоматическое форматирование шапки таблицы (фирменный синий фон, белый жирный шрифт), автоподбор ширины колонок, рамки ячеек и автоматическое распознавание чисел/процентов.
+
+### 3. 🗜️ Сжатие PDF без потери качества (True Lossless)
 В отличие от примитивных онлайн-сервисов, снижающих качество картинок до размытия, в DocFormater реализовано настоящее сжатие без потери качества:
 * **Объединение в объектные потоки (Object Streams / PDF 1.5+):** сотни разрозненных текстовых и структурных объектов PDF объединяются в единые непрерывные потоки zlib/deflate.
 * **Максимальная компрессия FlateDecode (Level 9):** перепаковка содержимого страниц и встроенных шрифтов.
@@ -108,22 +116,29 @@ curl -X POST "http://localhost:8080/api/convert" \
      -F "file=@sample_contract.docx"
 ```
 
-**Ответ JSON:**
-```json
-{
-  "success": true,
-  "file_id": "93b2a543-34e1-4560-84a1-8d26c19a4e8d",
-  "original_filename": "sample_contract.docx",
-  "download_filename": "sample_contract.pdf",
-  "original_size": 37211,
-  "converted_size": 2301,
-  "engine_used": "native_python_docx",
-  "duration_seconds": 0.02,
-  "download_url": "/api/download/93b2a543-34e1-4560-84a1-8d26c19a4e8d.pdf?filename=sample_contract.pdf"
-}
+### 3. Обратная конвертация из PDF в Word или Excel
+```http
+POST /api/convert-from-pdf
+Content-Type: multipart/form-data
+```
+Параметры:
+* `file`: файл PDF (`.pdf`)
+* `target_format`: `docx` (по умолчанию) или `xlsx`
+
+**Пример запроса через curl:**
+```bash
+# В документ Word (.docx)
+curl -X POST "http://localhost:8080/api/convert-from-pdf" \
+     -F "file=@document.pdf" \
+     -F "target_format=docx"
+
+# В таблицу Excel (.xlsx)
+curl -X POST "http://localhost:8080/api/convert-from-pdf" \
+     -F "file=@financial_report.pdf" \
+     -F "target_format=xlsx"
 ```
 
-### 3. Сжатие PDF
+### 4. Сжатие PDF
 ```http
 POST /api/compress
 Content-Type: multipart/form-data
@@ -139,21 +154,7 @@ curl -X POST "http://localhost:8080/api/compress" \
      -F "mode=lossless"
 ```
 
-**Ответ JSON:**
-```json
-{
-  "success": true,
-  "original_size": 15420000,
-  "compressed_size": 4210000,
-  "saved_bytes": 11210000,
-  "saved_percent": 72.7,
-  "engine_used": "pikepdf (QPDF Lossless Engine)",
-  "mode": "lossless",
-  "download_url": "/api/download/..."
-}
-```
-
-### 4. Конвертация и сжатие в 1 запрос
+### 5. Конвертация и сжатие в 1 запрос
 ```http
 POST /api/convert-and-compress
 Content-Type: multipart/form-data

@@ -26,6 +26,7 @@ wheels/
 # Storage uploads and outputs
 storage/uploads/*
 storage/outputs/*
+storage/test_outputs/*
 !storage/uploads/.gitkeep
 !storage/outputs/.gitkeep
 

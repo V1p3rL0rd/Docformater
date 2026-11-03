@@ -1,4 +1,4 @@
-// DocuFlow Frontend Application Logic
+// DocFormater Frontend Application Logic
 document.addEventListener("DOMContentLoaded", () => {
   // Elements
   const tabs = document.querySelectorAll(".tab-btn");

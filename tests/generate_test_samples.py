@@ -92,7 +92,7 @@ def create_sample_pdf_with_image():
 
     c = canvas.Canvas(str(path), pagesize=letter)
     c.setFont("Helvetica-Bold", 18)
-    c.drawString(100, 700, "Отчет компании DocuFlow")
+    c.drawString(100, 700, "Отчет компании DocFormater")
     c.setFont("Helvetica", 12)
     c.drawString(100, 670, "Демонстрационный PDF документ для тестирования сжатия без потерь.")
     c.drawImage(str(img_path), 100, 300, width=400, height=300)

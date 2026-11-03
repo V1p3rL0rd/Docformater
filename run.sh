@@ -17,7 +17,7 @@ else
 fi
 
 echo "=========================================================="
-echo " Starting DocuFlow Web Application"
+echo " Starting DocFormater Web Application"
 echo " Access URL: http://localhost:8000"
 echo " Swagger API: http://localhost:8000/docs"
 echo "=========================================================="

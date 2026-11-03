@@ -49,7 +49,7 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(
-    title="DocuFlow - PDF & Office Processing Studio",
+    title="DocFormater - PDF & Office Processing Studio",
     description="Веб-сервис для конвертации офисных документов (Word, Excel) в PDF и сжатия PDF файлов без потери качества.",
     version="1.0.0",
     lifespan=lifespan,

@@ -3,7 +3,7 @@ import logging
 from pathlib import Path
 from app.config import UPLOAD_DIR, OUTPUT_DIR, FILE_RETENTION_MINUTES
 
-logger = logging.getLogger("docuflow.cleaner")
+logger = logging.getLogger("docformater.cleaner")
 
 
 def cleanup_expired_files(retention_minutes: int = FILE_RETENTION_MINUTES) -> int:

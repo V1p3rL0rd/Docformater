@@ -1,11 +1,11 @@
 version: "3.8"
 
 services:
-  docuflow:
+  docformater:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: docuflow-studio
+    container_name: docformater-studio
     restart: unless-stopped
     ports:
       - "8000:8000"
@@ -17,7 +17,7 @@ services:
       - LIBREOFFICE_PATH=/usr/bin/soffice
     volumes:
       # Persist storage if needed
-      - docuflow_storage:/app/storage
+      - docformater_storage:/app/storage
 
 volumes:
-  docuflow_storage:
+  docformater_storage:
